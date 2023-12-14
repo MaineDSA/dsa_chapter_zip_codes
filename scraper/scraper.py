@@ -27,12 +27,14 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 # this will take several days to scrape depending on RNG, i suggest running it
 # on an always-up server or VM.
 
+
 def get_random_proxy(proxy_list):
     return random.choice(proxy_list)
 
+
 def scrape_zip_code(zip_code, driver, proxy):
     proxy_url = f"http://{proxy['host']}:{proxy['port']}"
-    webdriver.DesiredCapabilities.CHROME['proxy'] = {
+    webdriver.DesiredCapabilities.CHROME["proxy"] = {
         "httpProxy": proxy_url,
         "ftpProxy": proxy_url,
         "sslProxy": proxy_url,
@@ -56,7 +58,7 @@ def scrape_zip_code(zip_code, driver, proxy):
         time.sleep(rand)
         proxy = get_random_proxy(proxy_list)
         proxy_url = f"http://{proxy['host']}:{proxy['port']}"
-        webdriver.DesiredCapabilities.CHROME['proxy'] = {
+        webdriver.DesiredCapabilities.CHROME["proxy"] = {
             "httpProxy": proxy_url,
             "ftpProxy": proxy_url,
             "sslProxy": proxy_url,
@@ -70,7 +72,7 @@ def scrape_zip_code(zip_code, driver, proxy):
             driver.quit()
             print("scraped and written!")
             exit()
-    
+
     content = driver.find_element(By.CLASS_NAME, "line-content").text
 
     try:
@@ -80,6 +82,7 @@ def scrape_zip_code(zip_code, driver, proxy):
         chapter_name = "Chapter not found."
 
     return zip_code, chapter_name
+
 
 # load proxies
 proxy_list = []
@@ -99,7 +102,7 @@ driver = webdriver.Chrome()
 with open("chapter_zips.csv", "w", newline="", encoding="UTF-8") as csvfile:
     fieldnames = ["zip", "chapter"]
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    
+
     writer.writeheader()
 
     for zip_code in zip_codes:
