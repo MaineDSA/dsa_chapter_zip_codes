@@ -95,7 +95,8 @@ all_zip_codes = [str(i).zfill(5) for i in range(501, 99951)]
 driver = webdriver.Chrome()
 
 # create the .csv
-with open("chapter_zips.csv", "w", newline="", encoding="UTF-8") as csvfile:
+csv_path = os.path.join(os.path.split(os.path.dirname(__file__))[0], '../chapter_zips.csv')
+with open(csv_path, newline="", encoding="UTF-8") as csvfile:
     fieldnames = ["zip", "chapter"]
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
