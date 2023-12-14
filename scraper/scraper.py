@@ -93,7 +93,7 @@ with open("proxy_list.csv", "r", encoding="utf-8") as proxy_csv:
         proxy_list.append(row)
 
 # my laziness knows no bounds
-zip_codes = [ str(i).zfill(5) for i in range(00501, 99951) ]
+zip_codes = [str(i).zfill(5) for i in range(501, 99951)]
 
 # webdriver
 driver = webdriver.Chrome()
