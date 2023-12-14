@@ -33,7 +33,8 @@ jobs:
       run: |
         python3 -m pip install --upgrade pip
         pip3 install pylint
-        for d in $(git ls-files 'requirements.txt')
+        if [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi
+        for d in $(git ls-files '**/requirements.txt')
         do
           pip3 install -r $d
         done
