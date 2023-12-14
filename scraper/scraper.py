@@ -29,6 +29,7 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 
 
 def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
+    """Checks a zip code to see what chapter it is part of, via provided web proxy dict"""
     proxy_url = f"http://{proxy['host']}:{proxy['port']}"
     webdriver.DesiredCapabilities.CHROME["proxy"] = {
         "httpProxy": proxy_url,
