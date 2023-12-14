@@ -7,6 +7,7 @@ import csv
 import json
 import os
 import random
+import sys
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import DesiredCapabilities
@@ -67,8 +68,7 @@ def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
         if i > 600:
             print("timed out!")
             driver.quit()
-            print("scraped and written!")
-            exit()
+            sys.exit("scraped and written!")
 
     content = driver.find_element(By.CLASS_NAME, "line-content").text
 
