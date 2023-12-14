@@ -1,3 +1,8 @@
+"""
+scrapes from dsa website to a csv current zip codes associated with a chapter
+cuz this is for some reason (???) the best way to determine constituency
+"""
+
 import csv
 import time
 from selenium import webdriver
@@ -12,8 +17,6 @@ import os
 
 # maeve andersen
 # 27 august 2023
-# scrapes from dsa website to a csv current zip codes associated with a chapter
-# cuz this is for some reason (???) the best way to determine constituency
 
 # if you don't know exactly what this is doing and the consequences, you
 # should really not be using this script! there is an inherent risk of
