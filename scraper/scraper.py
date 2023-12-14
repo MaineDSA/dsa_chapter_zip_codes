@@ -28,11 +28,7 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 # on an always-up server or VM.
 
 
-def get_random_proxy(proxy_list):
-    return random.choice(proxy_list)
-
-
-def scrape_zip_code(zip_code, driver, proxy):
+def scrape_zip_code(zip_code, proxy):
     proxy_url = f"http://{proxy['host']}:{proxy['port']}"
     webdriver.DesiredCapabilities.CHROME["proxy"] = {
         "httpProxy": proxy_url,
@@ -56,7 +52,7 @@ def scrape_zip_code(zip_code, driver, proxy):
         i += rand
         print("stalled for " + str(i))
         time.sleep(rand)
-        proxy = get_random_proxy(proxy_list)
+        proxy = random.choice(proxy_list)
         proxy_url = f"http://{proxy['host']}:{proxy['port']}"
         webdriver.DesiredCapabilities.CHROME["proxy"] = {
             "httpProxy": proxy_url,
@@ -93,7 +89,7 @@ with open("proxy_list.csv", "r", encoding="utf-8") as proxy_csv:
         proxy_list.append(row)
 
 # my laziness knows no bounds
-zip_codes = [str(i).zfill(5) for i in range(501, 99951)]
+all_zip_codes = [str(i).zfill(5) for i in range(501, 99951)]
 
 # webdriver
 driver = webdriver.Chrome()
@@ -105,13 +101,13 @@ with open("chapter_zips.csv", "w", newline="", encoding="UTF-8") as csvfile:
 
     writer.writeheader()
 
-    for zip_code in zip_codes:
-        print(zip_code)
-        proxy = get_random_proxy(proxy_list)
-        zip_code, chapter_name = scrape_zip_code(zip_code, driver, proxy)
-        if chapter_name != "Chapter not found.":
-            writer.writerow({"zip": zip_code, "chapter": chapter_name})
-            print(chapter_name)
+    for iter_zip_code in all_zip_codes:
+        print(iter_zip_code)
+        random_proxy = random.choice(proxy_list)
+        scraped_zip, scraped_chapter = scrape_zip_code(iter_zip_code, random_proxy)
+        if scraped_chapter != "Chapter not found.":
+            writer.writerow({"zip": scraped_zip, "chapter": scraped_chapter})
+            print(scraped_chapter)
         else:
             print("not written!")
 
