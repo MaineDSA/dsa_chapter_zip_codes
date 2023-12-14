@@ -33,7 +33,10 @@ jobs:
       run: |
         python3 -m pip install --upgrade pip
         pip3 install pylint
-        if [ -f $(git ls-files 'requirements.txt') ]; then pip3 install -r $(git ls-files 'requirements.txt'); fi
+        for d in $(git ls-files 'requirements.txt')
+        do
+          pip3 install -r $d
+        done
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py') --max-line-length=160
