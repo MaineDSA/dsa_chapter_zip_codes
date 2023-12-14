@@ -28,7 +28,7 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 # on an always-up server or VM.
 
 
-def scrape_zip_code(zip_code, proxy):
+def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
     proxy_url = f"http://{proxy['host']}:{proxy['port']}"
     webdriver.DesiredCapabilities.CHROME["proxy"] = {
         "httpProxy": proxy_url,
