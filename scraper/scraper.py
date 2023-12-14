@@ -4,16 +4,15 @@ cuz this is for some reason (???) the best way to determine constituency
 """
 
 import csv
+import json
+import os
+import random
 import time
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import DesiredCapabilities
-from selenium.webdriver.common.proxy import Proxy, ProxyType
-import pandas as pd
 from selenium.webdriver.common.by import By
-import json
-import random
-import os
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 
 # maeve andersen
 # 27 august 2023
@@ -21,7 +20,7 @@ import os
 # if you don't know exactly what this is doing and the consequences, you
 # should really not be using this script! there is an inherent risk of
 # overloading the API. do not adjust any sleep settings except to increase
-# them! i have intentionally not included the proxy list, consider it a 
+# them! i have intentionally not included the proxy list, consider it a
 # really basic "means test" of sorts for my conscience to ensure no one is
 # running this out of the box.
 
