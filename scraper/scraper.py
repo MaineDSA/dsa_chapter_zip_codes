@@ -12,10 +12,7 @@ import time
 import logging
 from tqdm import tqdm
 from selenium import webdriver
-from selenium.webdriver.chrome.options import DesiredCapabilities
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.proxy import Proxy, ProxyType
 
 # maeve andersen
 # 27 august 2023
@@ -116,7 +113,7 @@ with open(csv_path, mode="w", newline="", encoding="UTF-8") as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
     writer.writeheader()
 
-    for iter_zip_code in tqdm(all_zip_codes, unit="zips", leave=False):
+    for iter_zip_code in tqdm(all_zip_codes, unit="zipcode", leave=False):
         logging.info("Checking chapter assignment of: %s", iter_zip_code)
         random_proxy = random.choice(proxy_list)
         scraped_zip, scraped_chapter = scrape_zip_code(iter_zip_code, random_proxy)
