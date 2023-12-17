@@ -10,6 +10,7 @@ import random
 import sys
 import time
 import logging
+from tqdm import tqdm
 from selenium import webdriver
 from selenium.webdriver.chrome.options import DesiredCapabilities
 from selenium.webdriver.common.by import By
@@ -115,7 +116,7 @@ with open(csv_path, mode="w", newline="", encoding="UTF-8") as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
     writer.writeheader()
 
-    for iter_zip_code in all_zip_codes:
+    for iter_zip_code in tqdm(all_zip_codes, unit="zips", leave=False):
         logging.info("Checking chapter assignment of: %s", iter_zip_code)
         random_proxy = random.choice(proxy_list)
         scraped_zip, scraped_chapter = scrape_zip_code(iter_zip_code, random_proxy)
