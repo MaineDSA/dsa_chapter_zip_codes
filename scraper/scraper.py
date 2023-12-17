@@ -9,6 +9,7 @@ import os
 import random
 import sys
 import time
+import logging
 from selenium import webdriver
 from selenium.webdriver.chrome.options import DesiredCapabilities
 from selenium.webdriver.common.by import By
@@ -29,21 +30,28 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 # on an always-up server or VM.
 
 
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s : %(levelname)s : %(message)s")
+
+
 def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
     """Checks a zip code to see what chapter it is part of, via provided web proxy dict"""
+    url = f"view-source:https://chapters.dsausa.org/api/search?zip={zip_code}"
+    logging.info("API URL: %s", url)
+
     proxy_url = f"http://{proxy['host']}:{proxy['port']}"
+    logging.info("Using proxy: %s", proxy_url)
     webdriver.DesiredCapabilities.CHROME["proxy"] = {
         "httpProxy": proxy_url,
         "ftpProxy": proxy_url,
         "sslProxy": proxy_url,
         "proxyType": "MANUAL",
     }
-    print(proxy_url)
     # this sucks but prevents overload
+
     rand = random.randint(2, 5)
-    print("waiting " + str(rand))
+    logging.info("Waiting random time: %s", rand)
     time.sleep(rand)
-    url = f"view-source:https://chapters.dsausa.org/api/search?zip={zip_code}"
+
     driver.get(url)
     content = driver.page_source
 
@@ -51,10 +59,14 @@ def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
     i = 0
     while ("Internal Server Error" in driver.page_source) or ("Rate limit exceeded" in driver.page_source) or ("502: Bad gateway" in driver.page_source):
         rand = random.randint(2, 5)
-        i += rand
-        print("stalled for " + str(i))
+        logging.info("Stalling for: %s", i)
         time.sleep(rand)
+
+        i += rand
+
         proxy = random.choice(proxy_list)
+
+        logging.info("Using proxy: %s", proxy_url)
         proxy_url = f"http://{proxy['host']}:{proxy['port']}"
         webdriver.DesiredCapabilities.CHROME["proxy"] = {
             "httpProxy": proxy_url,
@@ -62,13 +74,13 @@ def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
             "sslProxy": proxy_url,
             "proxyType": "MANUAL",
         }
-        print(proxy_url)
+
         driver.get(url)
         content = driver.page_source
         if i > 600:
-            print("timed out!")
+            logging.critical("API timed out!")
             driver.quit()
-            sys.exit("scraped and written!")
+            sys.exit("Data has been scraped and written.")
 
     content = driver.find_element(By.CLASS_NAME, "line-content").text
 
@@ -96,23 +108,22 @@ all_zip_codes = [str(i).zfill(5) for i in range(501, 99951)]
 driver = webdriver.Chrome()
 
 # create the .csv
+logging.info("Opening file at: %s", csv_path)
 csv_path = os.path.join(os.path.split(os.path.dirname(__file__))[0], "../chapter_zips.csv")
 with open(csv_path, newline="", encoding="UTF-8") as csvfile:
     fieldnames = ["zip", "chapter"]
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
-
     writer.writeheader()
 
     for iter_zip_code in all_zip_codes:
-        print(iter_zip_code)
+        logging.info("Checking chapter assignment of: %s", iter_zip_code)
         random_proxy = random.choice(proxy_list)
         scraped_zip, scraped_chapter = scrape_zip_code(iter_zip_code, random_proxy)
         if scraped_chapter != "Chapter not found.":
             writer.writerow({"zip": scraped_zip, "chapter": scraped_chapter})
-            print(scraped_chapter)
+            logging.info("%s assigned to: %s", iter_zip_code, scraped_chapter)
         else:
-            print("not written!")
+            logging.warning("%s is not assigned to a chapter", iter_zip_code)
 
 driver.quit()
-
-print("scraped and written!")
+sys.exit("Data has been scraped and written.")
