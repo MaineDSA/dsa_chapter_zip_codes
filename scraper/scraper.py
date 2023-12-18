@@ -31,7 +31,8 @@ from selenium.webdriver.common.by import By
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s : %(levelname)s : %(message)s")
 
 
-def configure_browser_proxy(proxy: str):
+def configure_browser_proxy(proxy: dict):
+    """wait a random amount of time, then set up chrome with the provided proxy"""
     rand = random.randint(2, 5)
     logging.info("Waiting random time: %s", rand)
     time.sleep(rand)
