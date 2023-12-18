@@ -31,10 +31,10 @@ from selenium.webdriver.common.by import By
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s : %(levelname)s : %(message)s")
 
 
-def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
-    """Checks a zip code to see what chapter it is part of, via provided web proxy dict"""
-    url = f"view-source:https://chapters.dsausa.org/api/search?zip={zip_code}"
-    logging.info("API URL: %s", url)
+def configure_browser_proxy(proxy: str):
+    rand = random.randint(2, 5)
+    logging.info("Waiting random time: %s", rand)
+    time.sleep(rand)
 
     proxy_url = f"http://{proxy['host']}:{proxy['port']}"
     logging.info("Using proxy: %s", proxy_url)
@@ -45,36 +45,25 @@ def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
         "proxyType": "MANUAL",
     }
     # this sucks but prevents overload
+    return rand
 
-    rand = random.randint(2, 5)
-    logging.info("Waiting random time: %s", rand)
-    time.sleep(rand)
 
+def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
+    """Checks a zip code to see what chapter it is part of, via provided web proxy dict"""
+    url = f"view-source:https://chapters.dsausa.org/api/search?zip={zip_code}"
+    logging.debug("API URL: %s", url)
+
+    rand = configure_browser_proxy(proxy)
     driver.get(url)
-    content = driver.page_source
 
     # ensure no server error
     i = 0
     while ("Internal Server Error" in driver.page_source) or ("Rate limit exceeded" in driver.page_source) or ("502: Bad gateway" in driver.page_source):
-        rand = random.randint(2, 5)
-        logging.info("Stalling for: %s", i)
-        time.sleep(rand)
-
         i += rand
 
-        proxy = random.choice(proxy_list)
-
-        logging.info("Using proxy: %s", proxy_url)
-        proxy_url = f"http://{proxy['host']}:{proxy['port']}"
-        webdriver.DesiredCapabilities.CHROME["proxy"] = {
-            "httpProxy": proxy_url,
-            "ftpProxy": proxy_url,
-            "sslProxy": proxy_url,
-            "proxyType": "MANUAL",
-        }
-
+        rand = configure_browser_proxy(random.choice(proxy_list))
         driver.get(url)
-        content = driver.page_source
+
         if i > 600:
             logging.critical("API timed out!")
             driver.quit()
