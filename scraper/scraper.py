@@ -76,6 +76,7 @@ def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
         data = json.loads(content)
         chapter_name = data.get("data", {}).get("chapter", "Chapter not found.")
     except json.JSONDecodeError:
+        logging.warning(json.JSONDecodeError)
         chapter_name = "Chapter not found."
 
     return zip_code, chapter_name
@@ -108,7 +109,7 @@ with open(csv_path, mode="w", newline="", encoding="UTF-8") as csvfile:
             writer.writerow({"zip": scraped_zip, "chapter": scraped_chapter})
             logging.info("%s assigned to: %s", iter_zip_code, scraped_chapter)
         else:
-            logging.warning("%s is not assigned to a chapter", iter_zip_code)
+            logging.info("%s is not assigned to a chapter", iter_zip_code)
 
 driver.quit()
 sys.exit("Data has been scraped and written.")
