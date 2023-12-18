@@ -82,12 +82,9 @@ def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
 
 
 # load proxies
-proxy_list = []
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 with open("proxy_list.csv", "r", encoding="utf-8") as proxy_csv:
-    reader = csv.DictReader(proxy_csv)
-    for row in reader:
-        proxy_list.append(row)
+    proxy_list = [proxy for proxy in csv.DictReader(proxy_csv)]
 
 # my laziness knows no bounds
 all_zip_codes = [str(i).zfill(5) for i in range(501, 99951)]
