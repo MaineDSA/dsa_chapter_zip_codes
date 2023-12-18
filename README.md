@@ -1,3 +1,4 @@
+[![Pylint](https://github.com/MaineDSA/dsa_chapter_zip_codes/actions/workflows/pylint.yml/badge.svg)](https://github.com/MaineDSA/dsa_chapter_zip_codes/actions/workflows/pylint.yml)
 # DSA Chapter Zip Assignments
 
 This repository includes a list of the zip code assignments for the constitutional boundaries of different chapters of the Democratic Socialists of America (DSA).
