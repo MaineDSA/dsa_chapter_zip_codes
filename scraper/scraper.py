@@ -10,6 +10,7 @@ import random
 import sys
 import time
 import logging
+import zipcodes
 from tqdm import tqdm
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -87,10 +88,12 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 with open("proxy_list.csv", "r", encoding="utf-8") as proxy_csv:
     proxy_list = list(csv.DictReader(proxy_csv))
 
-# my laziness knows no bounds
-all_zip_codes = [str(i).zfill(5) for i in range(501, 99951)]
+# compile list of all valid zipcodes
+logging.info("Preparing list of valid US ZIP Codes.")
+valid_zips = [valid_zip for i in tqdm(range(501, 99951), unit="ZIPs") if zipcodes.is_real(valid_zip := str(i).zfill(5))]
+logging.info("Found %s valid US ZIP Codes.", len(valid_zips))
 
-# webdriver
+# initialize webdriver
 driver = webdriver.Chrome()
 
 # create the .csv
@@ -101,7 +104,7 @@ with open(csv_path, mode="w", newline="", encoding="UTF-8") as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
     writer.writeheader()
 
-    for iter_zip_code in tqdm(all_zip_codes, unit="zipcode", leave=False):
+    for iter_zip_code in tqdm(valid_zips, unit="zipcode", leave=False):
         logging.info("Checking chapter assignment of: %s", iter_zip_code)
         random_proxy = random.choice(proxy_list)
         scraped_zip, scraped_chapter = scrape_zip_code(iter_zip_code, random_proxy)
