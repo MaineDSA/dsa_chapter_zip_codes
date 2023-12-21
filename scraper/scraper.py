@@ -5,15 +5,16 @@ cuz this is for some reason (???) the best way to determine constituency
 
 import csv
 import json
+import logging
 import os
 import random
 import sys
 import time
-import logging
+
 import zipcodes
-from tqdm import tqdm
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from tqdm import tqdm
 
 # maeve andersen
 # 27 august 2023
@@ -29,7 +30,9 @@ from selenium.webdriver.common.by import By
 # on an always-up server or VM.
 
 
-logging.basicConfig(level=logging.WARNING, format="%(asctime)s : %(levelname)s : %(message)s")
+logging.basicConfig(
+    level=logging.WARNING, format="%(asctime)s : %(levelname)s : %(message)s"
+)
 
 
 def configure_browser_proxy(proxy: dict):
@@ -60,7 +63,11 @@ def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
 
     # ensure no server error
     i = 0
-    while ("Internal Server Error" in driver.page_source) or ("Rate limit exceeded" in driver.page_source) or ("502: Bad gateway" in driver.page_source):
+    while (
+        ("Internal Server Error" in driver.page_source)
+        or ("Rate limit exceeded" in driver.page_source)
+        or ("502: Bad gateway" in driver.page_source)
+    ):
         i += rand
 
         rand = configure_browser_proxy(random.choice(proxy_list))
@@ -90,7 +97,11 @@ with open("proxy_list.csv", "r", encoding="utf-8") as proxy_csv:
 
 # compile list of all valid zipcodes
 logging.info("Preparing list of valid US ZIP Codes.")
-valid_zips = [valid_zip for i in tqdm(range(501, 99951), unit="ZIPs") if zipcodes.is_real(valid_zip := str(i).zfill(5))]
+valid_zips = [
+    valid_zip
+    for i in tqdm(range(501, 99951), unit="ZIPs")
+    if zipcodes.is_real(valid_zip := str(i).zfill(5))
+]
 logging.info("Found %s valid US ZIP Codes.", len(valid_zips))
 
 # initialize webdriver
