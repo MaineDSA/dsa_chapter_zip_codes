@@ -51,7 +51,7 @@ def configure_browser_proxy(proxy: dict):
     return rand
 
 
-def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
+def scrape_chapter_from_zip_code(zip_code: str, proxy: dict) -> (str, str):
     """Checks a zip code to see what chapter it is part of, via provided web proxy dict"""
     url = f"view-source:https://chapters.dsausa.org/api/search?zip={zip_code}"
     logging.debug("API URL: %s", url)
@@ -76,12 +76,10 @@ def scrape_zip_code(zip_code: str, proxy: dict) -> (str, str):
 
     try:
         data = json.loads(content)
-        chapter_name = data.get("data", {}).get("chapter", "Chapter not found.")
+        return data.get("data", {}).get("chapter", "Chapter not found.")
     except json.JSONDecodeError:
         logging.warning(json.JSONDecodeError)
-        chapter_name = "Chapter not found."
-
-    return zip_code, chapter_name
+        return "Chapter not found."
 
 
 # load proxies
@@ -108,9 +106,9 @@ with open(csv_path, mode="w", newline="", encoding="UTF-8") as csvfile:
     for iter_zip_code in tqdm(valid_zips, unit="zipcode", leave=False):
         logging.info("Checking chapter assignment of: %s", iter_zip_code)
         random_proxy = random.choice(proxy_list)
-        scraped_zip, scraped_chapter = scrape_zip_code(iter_zip_code, random_proxy)
+        scraped_chapter = scrape_chapter_from_zip_code(iter_zip_code, random_proxy)
         if scraped_chapter != "Chapter not found.":
-            writer.writerow({"zip": scraped_zip, "chapter": scraped_chapter})
+            writer.writerow({"zip": iter_zip_code, "chapter": scraped_chapter})
             logging.info("%s assigned to: %s", iter_zip_code, scraped_chapter)
         else:
             logging.info("%s is not assigned to a chapter", iter_zip_code)
