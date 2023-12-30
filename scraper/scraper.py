@@ -11,7 +11,7 @@ import random
 import sys
 import time
 
-import zipcodes
+from zipcodes import is_real
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from tqdm import tqdm
@@ -33,7 +33,7 @@ from tqdm import tqdm
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s : %(levelname)s : %(message)s")
 
 
-def configure_browser_proxy(proxy: dict):
+def configure_browser_proxy(proxy: dict) -> int:
     """wait a random amount of time, then set up chrome with the provided proxy"""
     rand = random.randint(2, 5)
     logging.info("Waiting random time: %s", rand)
@@ -51,7 +51,7 @@ def configure_browser_proxy(proxy: dict):
     return rand
 
 
-def scrape_chapter_from_zip_code(zip_code: str, proxy: dict) -> (str, str):
+def scrape_chapter_from_zip_code(zip_code: str, proxy: dict) -> str:
     """Checks a zip code to see what chapter it is part of, via provided web proxy dict"""
     url = f"view-source:https://chapters.dsausa.org/api/search?zip={zip_code}"
     logging.debug("API URL: %s", url)
@@ -89,7 +89,7 @@ with open("proxy_list.csv", "r", encoding="utf-8") as proxy_csv:
 
 # compile list of all valid zipcodes
 logging.info("Preparing list of valid US ZIP Codes.")
-valid_zips = [valid_zip for i in tqdm(range(501, 99951), unit="ZIPs") if zipcodes.is_real(valid_zip := str(i).zfill(5))]
+valid_zips = [valid_zip for i in tqdm(range(501, 99951), unit="ZIPs") if is_real(valid_zip := str(i).zfill(5))]
 logging.info("Found %s valid US ZIP Codes.", len(valid_zips))
 
 # initialize webdriver
