@@ -16,6 +16,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from tqdm import tqdm
 
+
 # maeve andersen
 # 27 august 2023
 
@@ -28,9 +29,6 @@ from tqdm import tqdm
 
 # this will take several days to scrape depending on RNG, i suggest running it
 # on an always-up server or VM.
-
-
-logging.basicConfig(level=logging.WARNING, format="%(asctime)s : %(levelname)s : %(message)s")
 
 
 def configure_browser_proxy(proxy: dict) -> int:
@@ -51,12 +49,13 @@ def configure_browser_proxy(proxy: dict) -> int:
     return rand
 
 
-def scrape_chapter_from_zip_code(zip_code: str, proxy: dict) -> str:
+def scrape_chapter_from_zip_code(zip_code: str) -> str:
     """Checks a zip code to see what chapter it is part of, via provided web proxy dict"""
+    logging.info("Checking chapter assignment of: %s", zip_code)
     url = f"view-source:https://chapters.dsausa.org/api/search?zip={zip_code}"
     logging.debug("API URL: %s", url)
 
-    rand = configure_browser_proxy(proxy)
+    rand = configure_browser_proxy(random.choice(proxy_list))
     driver.get(url)
 
     # ensure no server error
@@ -82,31 +81,28 @@ def scrape_chapter_from_zip_code(zip_code: str, proxy: dict) -> str:
         return "Chapter not found."
 
 
-# load proxies
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-with open("proxy_list.csv", "r", encoding="utf-8") as proxy_csv:
-    proxy_list = list(csv.DictReader(proxy_csv))
+def main():
+    """Create test dataset for DSA membership list"""
+    output_csv_path = os.path.join(os.path.split(os.path.dirname(__file__))[0], "chapter_zips.csv")
+    logging.info("Opening file at: %s", output_csv_path)
+    with open(output_csv_path, mode="w", newline="", encoding="UTF-8") as output_csv_file:
+        writer = csv.DictWriter(output_csv_file, fieldnames=["zip", "chapter"], quoting=csv.QUOTE_ALL)
+        writer.writeheader()
+        for iter_zip_code in tqdm(zipcodes.list_all(), unit="zipcode", leave=False):
+            scraped_chapter = scrape_chapter_from_zip_code(iter_zip_code)
+            if scraped_chapter != "Chapter not found.":
+                writer.writerow({"zip": iter_zip_code, "chapter": scraped_chapter})
+                logging.info("%s assigned to: %s", iter_zip_code, scraped_chapter)
+            else:
+                logging.info("%s is not assigned to a chapter", iter_zip_code)
 
-# initialize webdriver
-driver = webdriver.Chrome()
+    driver.quit()
+    logging.info("Data has been scraped and written.")
 
-# create the .csv
-csv_path = os.path.join(os.path.split(os.path.dirname(__file__))[0], "chapter_zips.csv")
-logging.info("Opening file at: %s", csv_path)
-with open(csv_path, mode="w", newline="", encoding="UTF-8") as csvfile:
-    fieldnames = ["zip", "chapter"]
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
-    writer.writeheader()
 
-    for iter_zip_code in tqdm(zipcodes.list_all(), unit="zipcode", leave=False):
-        logging.info("Checking chapter assignment of: %s", iter_zip_code)
-        random_proxy = random.choice(proxy_list)
-        scraped_chapter = scrape_chapter_from_zip_code(iter_zip_code, random_proxy)
-        if scraped_chapter != "Chapter not found.":
-            writer.writerow({"zip": iter_zip_code, "chapter": scraped_chapter})
-            logging.info("%s assigned to: %s", iter_zip_code, scraped_chapter)
-        else:
-            logging.info("%s is not assigned to a chapter", iter_zip_code)
-
-driver.quit()
-sys.exit("Data has been scraped and written.")
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.WARNING, format="%(asctime)s : %(levelname)s : %(message)s")
+    driver = webdriver.Chrome()
+    with open(os.path.join(os.path.dirname(__file__), "proxy_list.csv"), "r", encoding="utf-8") as proxy_csv:
+        proxy_list = list(csv.DictReader(proxy_csv))
+    main()
