@@ -77,8 +77,12 @@ def scrape_chapter_from_zip_code(zip_code: str) -> str:
         data = json.loads(content)
         return data.get("data", {}).get("chapter", "Chapter not found.")
     except json.JSONDecodeError:
-        logging.warning(json.JSONDecodeError)
+        logging.warning("JSONDecodeError: No valid JSON in content: %s", content)
         return "Chapter not found."
+
+def get_all_zip_codes() -> list[str]:
+    """Get all zip codes from the zipcodes library"""
+    return [zip_data["zip_code"] for zip_data in zipcodes.list_all()]
 
 
 def main():
@@ -88,7 +92,7 @@ def main():
     with open(output_csv_path, mode="w", newline="", encoding="UTF-8") as output_csv_file:
         writer = csv.DictWriter(output_csv_file, fieldnames=["zip", "chapter"], quoting=csv.QUOTE_ALL)
         writer.writeheader()
-        for iter_zip_code in tqdm(zipcodes.list_all(), unit="zipcode", leave=False):
+        for iter_zip_code in tqdm(get_all_zip_codes(), unit="zipcode", leave=False):
             scraped_chapter = scrape_chapter_from_zip_code(iter_zip_code)
             if scraped_chapter != "Chapter not found.":
                 writer.writerow({"zip": iter_zip_code, "chapter": scraped_chapter})
