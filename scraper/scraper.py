@@ -80,6 +80,7 @@ def scrape_chapter_from_zip_code(zip_code: str) -> str:
         logging.warning("JSONDecodeError: No valid JSON in content: %s", content)
         return "Chapter not found."
 
+
 def get_all_zip_codes() -> list[str]:
     """Get all zip codes from the zipcodes library"""
     return [zip_data["zip_code"] for zip_data in zipcodes.list_all()]
