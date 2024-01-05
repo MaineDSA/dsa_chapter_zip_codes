@@ -88,7 +88,7 @@ def get_all_zip_codes() -> list[str]:
 
 def main():
     """Create test dataset for DSA membership list"""
-    output_csv_path = os.path.join(os.path.split(os.path.dirname(__file__))[0], "chapter_zips.csv")
+    output_csv_path = os.path.join(os.path.dirname(__file__), "chapter_zips.csv")
     logging.info("Opening file at: %s", output_csv_path)
     with open(output_csv_path, mode="w", newline="", encoding="UTF-8") as output_csv_file:
         writer = csv.DictWriter(output_csv_file, fieldnames=["zip", "chapter"], quoting=csv.QUOTE_ALL)
