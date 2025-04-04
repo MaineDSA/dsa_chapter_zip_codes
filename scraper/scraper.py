@@ -33,7 +33,7 @@ from tqdm import tqdm
 
 def configure_browser_proxy(proxy: dict) -> int:
     """Wait a random amount of time, then set up chrome with the provided proxy."""
-    rand = random.randint(1,3)
+    rand = random.randint(1, 3)
     logger.info("Waiting random time: %s", rand)
     time.sleep(rand)
 
