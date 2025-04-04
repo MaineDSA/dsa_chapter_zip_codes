@@ -78,6 +78,9 @@ exclude_dirs = [
     ".venv/",
 ]
 
+[tool.mypy]
+pretty = true
+
 [[tool.mypy.overrides]]
 module = [
     "zipcodes",
