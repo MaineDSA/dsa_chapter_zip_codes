@@ -31,22 +31,21 @@ from tqdm import tqdm
 # on an always-up server or VM.
 
 
-def configure_browser_proxy(proxy: dict) -> int:
+def configure_browser_proxy(proxy: dict):
     """Wait a random amount of time, then set up chrome with the provided proxy."""
-    rand = random.randint(1, 3)
+    rand = random.randint(1, 5)
     logger.info("Waiting random time: %s", rand)
     time.sleep(rand)
 
-    proxy_url = f"http://{proxy['host']}:{proxy['port']}"
+    proxy_url = f"{proxy['host']}:{proxy['port']}"
     logger.info("Using proxy: %s", proxy_url)
+
     webdriver.DesiredCapabilities.CHROME["proxy"] = {
-        "httpProxy": proxy_url,
-        "ftpProxy": proxy_url,
-        "sslProxy": proxy_url,
+        "httpProxy": f"http://{proxy_url}",
+        "ftpProxy": f"ftp://{proxy_url}",
+        "sslProxy": f"https://{proxy_url}",
         "proxyType": "MANUAL",
     }
-    # this sucks but prevents overload
-    return rand
 
 
 def scrape_chapter_from_zip_code(driver: webdriver.Chrome, zip_code: str) -> str:
@@ -55,15 +54,13 @@ def scrape_chapter_from_zip_code(driver: webdriver.Chrome, zip_code: str) -> str
     url = f"view-source:https://chapters.dsausa.org/api/search?zip={zip_code}"
     logger.debug("API URL: %s", url)
 
-    rand = configure_browser_proxy(random.choice(proxy_list))
+    configure_browser_proxy(random.choice(proxy_list))
     driver.get(url)
 
     # ensure no server error
     i = 0
     while ("Internal Server Error" in driver.page_source) or ("Rate limit exceeded" in driver.page_source) or ("502: Bad gateway" in driver.page_source):
-        i += rand
-
-        rand = configure_browser_proxy(random.choice(proxy_list))
+        configure_browser_proxy(random.choice(proxy_list))
         driver.get(url)
 
         if i > 600:
