@@ -31,7 +31,7 @@ from tqdm import tqdm
 # on an always-up server or VM.
 
 
-def configure_browser_proxy(proxy: dict):
+def configure_browser_proxy(proxy: dict) -> None:
     """Wait a random amount of time, then set up chrome with the provided proxy."""
     rand = random.randint(1, 5)
     logger.info("Waiting random time: %s", rand)
