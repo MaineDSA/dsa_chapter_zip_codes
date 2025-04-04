@@ -1,4 +1,4 @@
-[![Ruff](https://github.com/MaineDSA/dsa_chapter_zip_codes/actions/workflows/lint-python.yml/badge.svg)](https://github.com/MaineDSA/dsa_chapter_zip_codes/actions/workflows/lint-python.yml)
+[![Python checks](https://github.com/MaineDSA/dsa_chapter_zip_codes/actions/workflows/python.yml/badge.svg?branch=main)](https://github.com/MaineDSA/dsa_chapter_zip_codes/actions/workflows/python.yml)
 
 # DSA Chapter Zip Assignments
 
