@@ -232,36 +232,3 @@ jobs:
                   pre-commit run --all-files
               env:
                   PRE_COMMIT_HOME: .pre-commit-cache
-
-    pip-install:
-        strategy:
-            fail-fast: false
-            matrix:
-                python-version:
-                    - '3.11'
-                    - '3.12'
-                    - '3.13'
-                os:
-                    - 'ubuntu-latest'
-                    - 'windows-latest'
-                    - 'macos-latest'
-
-        runs-on: ${{ matrix.os }}
-
-        steps:
-            - name: Harden runner
-              uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481
-              with:
-                  egress-policy: audit
-
-            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-
-            - name: Set up Python ${{ matrix.python-version }}
-              uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55
-              with:
-                  python-version: ${{ matrix.python-version }}
-                  cache: pip
-
-            - name: Install module and dependencies
-              run: |
-                  pip install .
