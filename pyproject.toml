@@ -77,12 +77,3 @@ exclude_dirs = [
     "tests/",
     ".venv/",
 ]
-
-[tool.mypy]
-pretty = true
-
-[[tool.mypy.overrides]]
-module = [
-    "zipcodes",
-]
-ignore_missing_imports = true
