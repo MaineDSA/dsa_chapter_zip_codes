@@ -76,6 +76,13 @@ ignore = [
     "D212",
 ]
 
+[tool.mypy]
+[[tool.mypy.overrides]]
+module = [
+    "zipcodes",
+]
+ignore_missing_imports = true
+
 [tool.bandit]
 exclude_dirs = [
     "./tests/",
