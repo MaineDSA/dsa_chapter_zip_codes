@@ -15,7 +15,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "bandit[toml]==1.8.3",
+    "bandit[toml,sarif]==1.8.3",
     "mypy==1.15.0",
     "pandas-stubs==2.2.3.250308",
     "pre-commit==4.2.0",
